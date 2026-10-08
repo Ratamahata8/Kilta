@@ -21,6 +21,7 @@ export function Shell() {
     seo = useGlobal("seo"),
     appearance = useGlobal("appearance");
   const location = useLocation();
+  const phone = contacts.contactPeople?.[0]?.phone || contacts.phone;
   const documents = entries
       .filter(
         (e) =>
@@ -97,17 +98,17 @@ export function Shell() {
       {!configStatus.configured && (
         <aside className={styles.configBanner} role="status">
           {config.demo
-            ? "Демо-режим: только просмотр. Данные не сохраняются, Supabase не подключён. Вход в админку, загрузка файлов и отправка заявок отключены."
+            ? "Демо-режим: только просмотр. Реальные изделия KILTA из архива от 8 октября 2026; цены, наличие и адреса требуют подтверждения. Данные не сохраняются, Supabase не подключён. Вход в админку, загрузка файлов и отправка заявок отключены."
             : "Supabase не подключён. Контент и вход в админку недоступны; требуется настройка проекта."}
           {config.demo && (
             <>
               <DemoThemes />
               <a
-                href={`${config.base}demo/LICENSE.txt`}
+                href={`${config.base}kilta/SOURCE.txt`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Источники демо-изображений (CC0 / CC BY 4.0)
+                Источник материалов — KILTA
               </a>
             </>
           )}
@@ -155,9 +156,9 @@ export function Shell() {
               {contacts.email && (
                 <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
               )}
-              {contacts.phone && (
-                <a href={`tel:${contacts.phone.replace(/[^+0-9]/g, "")}`}>
-                  {contacts.phone}
+              {phone && (
+                <a href={`tel:${phone.replace(/[^+0-9]/g, "")}`}>
+                  {phone}
                 </a>
               )}
               {contacts.social

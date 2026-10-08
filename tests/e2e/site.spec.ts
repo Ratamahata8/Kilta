@@ -12,6 +12,18 @@ const login = async (page: import("@playwright/test").Page) => {
     page.getByRole("heading", { name: "Управление KILTA" }),
   ).toBeVisible();
 };
+test("import preview reads actual source content without creating or publishing records", async ({page, context}) => {
+  const state = await mockBackend(context);
+  const original = structuredClone({drafts: state.drafts, published: state.published});
+  await login(page);
+  await page.getByRole("link", {name: "Импорт материалов", exact: true}).click();
+  await page.getByRole("button", {name: "Предпросмотр изменений", exact: true}).click();
+  await expect(page.getByRole("table").locator("tbody tr")).toHaveCount(31);
+  await expect(page.getByRole("button", {name: "Создать только новые черновики", exact: true})).toBeDisabled();
+  await page.getByRole("button", {name: "Посмотреть предмет", exact: true}).first().click();
+  await expect(page.getByRole("heading", {name: "Шезлонг «Геометрия»", exact: true})).toBeVisible();
+  expect(state.drafts).toEqual(original.drafts); expect(state.published).toEqual(original.published);
+});
 test("read-only demo: hash routes, three themes, responsive layouts and keyboard", async ({
   page,
 }) => {
@@ -57,10 +69,10 @@ test("read-only demo: hash routes, three themes, responsive layouts and keyboard
         (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05),
       ).toBeGreaterThanOrEqual(4.5);
     }
-    await page.goto("http://127.0.0.1:4174/Kilta/#/products/demo-chair");
+    await page.goto("http://127.0.0.1:4174/Kilta/#/products/geometria");
     await page.reload();
     await expect(
-      page.getByRole("heading", { name: "Демо / Кресло", exact: true }),
+      page.getByRole("heading", { name: "Шезлонг «Геометрия»", exact: true }),
     ).toBeVisible();
     expect(
       await page.evaluate(
@@ -125,12 +137,12 @@ test("owner UI: upload, draft, preview, publication, independent visitor and the
     {
       name: "chair-one.jpg",
       mimeType: "image/jpeg",
-      buffer: await readFile("public/demo/chair.jpg"),
+      buffer: await readFile("kilta-content/images/fe18c61f2f5a-___Smith2.jpg"),
     },
     {
       name: "chair-two.jpg",
       mimeType: "image/jpeg",
-      buffer: await readFile("public/demo/chair.jpg"),
+      buffer: await readFile("kilta-content/images/fe18c61f2f5a-___Smith2.jpg"),
     },
   ]);
   await page
@@ -168,7 +180,7 @@ test("owner UI: upload, draft, preview, publication, independent visitor and the
       });
     return route.fulfill({
       status: 200,
-      body: await readFile("public/demo/chair.jpg"),
+      body: await readFile("kilta-content/images/fe18c61f2f5a-___Smith2.jpg"),
       contentType: "image/jpeg",
     });
   });

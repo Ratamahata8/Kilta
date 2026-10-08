@@ -1,0 +1,27 @@
+.gallery { min-width: 0; }
+.stage { position: relative; width: 100%; aspect-ratio: 4/5; background: var(--surface); overflow: hidden; touch-action: pan-y; }
+.photo, .outgoing { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.incoming { animation: enter 220ms ease both; }
+.outgoing { animation: exit 220ms ease both; }
+@keyframes enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes exit { from { opacity: 1; } to { opacity: 0; } }
+.openButton { position: absolute; inset: 0; border: 0; background: transparent; color: var(--fg); }
+.openButton span { position: absolute; right: 12px; bottom: 12px; background: var(--bg); padding: 6px 12px; font-size: 12px; }
+.openButton:focus-visible { outline-offset: -5px; }
+.controls { display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 12px; }
+.controls button, .close { background: var(--bg); color: var(--fg); border: 1px solid var(--line); min-height: 44px; padding: 8px 12px; }
+.controls span { flex-shrink: 0; }
+.thumbnails { display: flex; gap: 8px; overflow-x: auto; margin: 16px 0; padding: 4px; }
+.thumbnails button { flex: 0 0 64px; border: 1px solid var(--line); background: var(--surface); padding: 0; height: 64px; }
+.thumbnails button[aria-pressed="true"] { border: 2px solid var(--accent); }
+.thumbnails img { width: 100%; height: 100%; object-fit: contain; }
+.caption { color: var(--muted); font-size: 12px; margin-top: 10px; }
+.lightbox { color: var(--fg); background: var(--bg); border: 1px solid var(--line); padding: 20px; width: min(1100px, 96vw); max-width: 96vw; max-height: 96dvh; }
+.lightbox[open] { animation: open 180ms ease both; }
+.lightbox::backdrop { background: rgb(0 0 0 / .75); }
+.lightboxContent { display: flex; flex-direction: column; gap: 8px; }
+.close { align-self: flex-end; }
+.largeStage { aspect-ratio: auto; height: min(75dvh, 800px); }
+@keyframes open { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
+@media (max-width: 600px) { .controls { gap: 6px; font-size: 11px; } .controls button { padding: 8px; } .lightbox { padding: 12px; } }
+@media (prefers-reduced-motion: reduce) { .incoming, .outgoing, .lightbox[open] { animation: none; transform: none; } .outgoing { display: none; } }

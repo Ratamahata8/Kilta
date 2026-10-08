@@ -42,6 +42,16 @@ export type ContentData = {
   order?: number;
   seoTitle?: string;
   seoDescription?: string;
+  dimensionsText?: string;
+  yearText?: string;
+  exhibitionsText?: string;
+  priceNote?: string;
+  availabilityConfirmed?: boolean;
+  reviewNotes?: string[];
+  requiresReview?: boolean;
+  sourceInfo?: { url: string; extractedAt: string; referenceKey: string };
+  contactPeople?: { name: string; phone: string }[];
+  platforms?: { label: string; url: string; description: string }[];
   city?: string;
   address?: string;
   hours?: string;
@@ -139,7 +149,12 @@ export type PublicMedia = Pick<
   | "focal_y"
   | "card_path"
   | "hero_path"
-> & { pdf_path?: string | null; url?: string; heroUrl?: string };
+> & {
+  pdf_path?: string | null; url?: string; heroUrl?: string;
+  width?: number; height?: number;
+  cardWidth?: number; cardHeight?: number;
+  heroWidth?: number; heroHeight?: number;
+};
 export type Role = {
   user_id: string;
   role: "owner" | "developer";

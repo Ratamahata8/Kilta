@@ -55,7 +55,7 @@ jobs:
           if (Object.values(values).some(value => /[\r\n]/.test(value))) throw Error('Multiline configuration is not allowed');
           appendFileSync(process.env.GITHUB_ENV, Object.entries(values).map(([name, value]) => `${name}=${value}\n`).join(''));
           appendFileSync(process.env.GITHUB_STEP_SUMMARY, demo
-            ? '### Read-only KILTA demo\nNo Supabase connection. Login, uploads, saves and inquiry submission are disabled. Demo images are licensed 3D renders.\n'
+            ? '### Read-only KILTA demo\nNo Supabase connection. Login, uploads, saves and inquiry submission are disabled. Real KILTA catalogue from the supplied archive; prices and details require owner confirmation.\n'
             : '### Supabase site\nPublic project configuration is required; verify Auth, RLS and Storage separately.\n');
           JS
       - run: npm run typecheck

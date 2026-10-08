@@ -8,7 +8,7 @@
 
 Создайте проект Supabase, выберите согласованный регион, план и способ резервирования. Проверьте доступность сервиса для команды, квоты Auth/Storage/egress и необходимость оплаты. Пароль PostgreSQL храните в менеджере секретов, не в `VITE_*` и не в репозитории.
 
-Примените `supabase/migrations/20261008000100_kilta.sql` через SQL Editor или стандартный миграционный процесс Supabase CLI с административным доступом, например `supabase link` и `supabase db push`. Credentials CLI вводятся защищённо; сам CLI не нужен владельцу или frontend runtime. Миграция транзакционная. В существующем проекте сначала проверьте названия объектов и отсутствие конфликтующих permissive policies. Не запускайте SQL-тестовую инфраструктуру `tests/sql/run.mjs` в облачном/production проекте.
+Примените SQL-файлы из `supabase/migrations/` по порядку имени (основная схема и `20261008000200_public_image_dimensions.sql`) через SQL Editor или стандартный миграционный процесс Supabase CLI с административным доступом, например `supabase link` и `supabase db push`. Credentials CLI вводятся защищённо; сам CLI не нужен владельцу или frontend runtime. Миграция транзакционная. В существующем проекте сначала проверьте названия объектов и отсутствие конфликтующих permissive policies. Не запускайте SQL-тестовую инфраструктуру `tests/sql/run.mjs` в облачном/production проекте.
 
 Миграция создаёт таблицы, ограничения, RLS, grants, role-checked RPC и buckets:
 

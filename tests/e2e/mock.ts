@@ -30,7 +30,7 @@ export async function mockBackend(context: BrowserContext) {
     { user_id: owner, role: "owner", name: "Тестовый владелец" },
   ];
   const files = new Map<string, Buffer>();
-  const photo = await readFile("public/demo/chair.jpg");
+  const photo = await readFile("kilta-content/images/fe18c61f2f5a-___Smith2.jpg");
   const user = {
     id: owner,
     aud: "authenticated",

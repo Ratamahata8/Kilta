@@ -20,6 +20,7 @@ import {
   removeEntry,
 } from "../lib/api";
 import { RichEditor } from "./RichEditor";
+import { ContactDetailsFields } from "./ContactDetailsFields";
 import { MediaSelect, GalleryField } from "./MediaFields";
 import styles from "./Admin.module.css";
 const docTypes = [
@@ -135,7 +136,7 @@ function Editor({ kind, id }: { kind: Kind; id: string }) {
     return () => window.removeEventListener("beforeunload", handler);
   }, [dirty]);
   const set = <K extends keyof ContentData>(key: K, value: ContentData[K]) => {
-    setData((current) => ({ ...current, [key]: value }));
+    setData((current) => ({ ...current, [key]: value, ...(key === "availability" ? { availabilityConfirmed: true } : {}) }));
     setDirty(true);
   };
   if (id !== "new" && !original && !entry)
@@ -175,7 +176,7 @@ function Editor({ kind, id }: { kind: Kind; id: string }) {
     </label>
   );
   const checkbox = (
-    key: "featured" | "demo" | "showInFooter",
+    key: "featured" | "demo" | "showInFooter" | "availabilityConfirmed" | "requiresReview",
     label: string,
   ) => (
     <label className={styles.checkbox}>
@@ -459,6 +460,13 @@ function Editor({ kind, id }: { kind: Kind; id: string }) {
                 </select>
               </label>
             </div>
+            {field("dimensionsText", "Размеры текстом", "textarea", "Показываются вместо числовых размеров. Сохраняйте исходную запись до подтверждения; очистите, чтобы использовать высоту/ширину/глубину.")}
+            {field("yearText", "Год создания")}
+            {field("exhibitionsText", "Выставки", "textarea")}
+            {field("priceNote", "Уточнение стоимости", "textarea")}
+            {data.availabilityConfirmed === false && <p className={styles.notice}>Наличие в архиве не подтверждено. Выберите актуальное значение выше перед публикацией.</p>}
+            {data.sourceInfo && checkbox("availabilityConfirmed", "Наличие подтверждено")}
+            {data.reviewNotes?.length ? <p className={styles.notice}>{data.reviewNotes.join(" ")}</p> : null}
             <div className={styles.fields}>
               <label className={styles.field}>
                 Как показывать цену
@@ -546,6 +554,8 @@ function Editor({ kind, id }: { kind: Kind; id: string }) {
         )}
         {kind === "document" && (
           <>
+            {data.sourceInfo && checkbox("requiresReview", "Архивный документ — требуется сверка владельцем")}
+            {data.reviewNotes?.length ? <p className={styles.notice}>{data.reviewNotes.join(" ")}</p> : null}
             <div className={styles.fields}>
               <label className={styles.field}>
                 Тип документа
@@ -708,6 +718,7 @@ function Editor({ kind, id }: { kind: Kind; id: string }) {
         )}
         {kind === "contacts" && (
           <>
+            <ContactDetailsFields data={data} onChange={patch => { setData(current => ({...current, ...patch})); setDirty(true); }} />
             <div className={styles.fields}>
               {field("phone", "Телефон")}
               {field("email", "Email", "email")}

@@ -3,6 +3,7 @@ import { Link, NavLink, Route, Routes, useParams } from "react-router-dom";
 import { useAuth, useCatalog, CatalogOverride } from "../lib/store";
 import { backend, check, supabase } from "../lib/supabase";
 import { configStatus } from "../lib/config";
+import { ImportContent } from "./ImportContent";
 import {
   kindLabels,
   singletonKinds,
@@ -167,6 +168,7 @@ function AdminLayout() {
             </NavLink>
           ))}
           <hr />
+          <NavLink to="/admin/import" className={({ isActive }) => (isActive ? styles.active : "")}>Импорт материалов</NavLink>
           <NavLink
             to="/admin/media"
             className={({ isActive }) => (isActive ? styles.active : "")}
@@ -208,6 +210,7 @@ function AdminLayout() {
           ) : (
             <Routes>
               <Route index element={<Dashboard />} />
+              <Route path="import" element={<ImportContent />} />
               <Route path="content/:kind" element={<ContentList />} />
               <Route path="edit/:kind/:id" element={<EditorRoute />} />
               <Route path="preview/:id" element={<PreviewPage />} />
