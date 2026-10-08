@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.env
+.env.*
+!.env.example
+media/
+backups/
+playwright-report/
+test-results/
+*.tsbuildinfo
+dist/
+.env.local
+.supabase/
+supabase/.temp/
+.test-build/

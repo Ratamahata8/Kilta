@@ -1,0 +1,38 @@
+# Демо KILTA на GitHub Pages без Supabase
+
+Демо использует существующий режим `VITE_DEMO_MODE=true` и локальные данные/изображения. Supabase URL/key в демо-сборке принудительно пустые, даже если в GitHub сохранены параметры проекта. Никаких внешних backend-сервисов, Node runtime, Docker или оплаты Supabase для просмотра не нужно.
+
+## Что можно посмотреть
+
+Главную, каталог и фильтры, карточки предметов, мастерскую, контакты, мобильное меню и три темы. Выбор темы в верхней панели действует только в текущем просмотре, не публикует настройки. Вверху каждой страницы показано предупреждение об ограничениях и ссылка на источники изображений.
+
+Данные и 3D-рендеры демонстрационные; это не изделия, цены или подтверждённые сведения KILTA. Шоурумы и юридические документы не опубликованы, пока нет настоящего контента. Read-only демо не позволяет войти в админку, загружать файлы, сохранять контент или отправлять заявки. Фиктивного успешного сохранения/входа нет. На другом устройстве открывается тот же встроенный каталог. `noindex` не ограничивает доступ: JS и демо-изображения доступны посетителю.
+
+## Что нажать в GitHub
+
+1. Откройте PR с этой реализацией в `Ratamahata8/Kilta`, дождитесь успешной проверки `build` и нажмите **Merge pull request → Confirm merge**. Для сохранения архивного коммита старого прототипа используйте обычный merge, без squash. Если PR ещё не создан, откройте страницу сравнения ветки, нажмите **Create pull request**, затем объедините после проверок.
+2. Откройте **Settings → Pages → Build and deployment → Source**, выберите **GitHub Actions** и сохраните настройку, если GitHub показывает кнопку **Save**. Видимость репозитория не меняйте. Для Pages из private-репозитория нужен поддерживаемый платный GitHub план; если Pages недоступны на вашем тарифе, публикация остаётся заблокированной до решения вопроса с тарифом.
+3. Откройте **Actions → Deploy KILTA to GitHub Pages → Run workflow**. Выберите **Branch: main**, оставьте **mode: demo**, нажмите зелёную **Run workflow**. Переменные и ключи Supabase не нужны. Push/merge в main тоже запускает workflow; если он начался до включения Pages и упал на deploy, выполните этот ручной запуск после шага 2.
+4. Дождитесь зелёных jobs **build** и **deploy**. Если включено согласование environment, нажмите **Review deployments → github-pages → Approve and deploy**. В успешном job `deploy` откройте ссылку environment `github-pages` либо в Settings → Pages нажмите **Visit site**.
+
+Ожидаемые адреса после успешной публикации:
+
+- Сайт: **https://ratamahata8.github.io/Kilta/**
+- Каталог: https://ratamahata8.github.io/Kilta/#/catalog
+- Карточка: https://ratamahata8.github.io/Kilta/#/products/demo-chair
+- Экран админки с отключённым входом: https://ratamahata8.github.io/Kilta/#/admin
+
+До успешного `deploy` этот адрес может возвращать 404. Путь `/Kilta/` регистрозависим. Домен не переключается. Если ранее заданы `VITE_BASE_PATH` или `KILTA_DEPLOY_MODE`, проверьте Actions Variables: для текущего project Pages base должен быть `/Kilta/`, а автоматический режим — `demo` (либо переменная режима отсутствует). Ручной выбор `demo` имеет приоритет над `KILTA_DEPLOY_MODE`.
+
+## Проверки и дальнейшее подключение
+
+Workflow выполняет `npm ci`, typecheck, lint, unit tests и production build. PR всегда строит демо и не запускает deploy; публикация разрешена при push в main или ручном запуске. Только `dist/` загружается в Pages artifact. Официальные Pages actions, environment `github-pages` и минимальные permissions уже настроены.
+
+Локальный просмотр:
+
+```sh
+npm ci
+VITE_SUPABASE_URL= VITE_SUPABASE_PUBLISHABLE_KEY= VITE_DEMO_MODE=true npm run dev
+```
+
+Реальный backend и админку подключают отдельно по [SETUP_SUPABASE](SETUP_SUPABASE.md). В Workflow dispatch есть режим `supabase`, который требует URL/publishable key и не допускает известные секретные ключи. Для будущих автоматических push задайте `KILTA_DEPLOY_MODE=supabase` только после подключения и проверки проекта.

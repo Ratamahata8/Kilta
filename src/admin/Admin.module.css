@@ -1,0 +1,437 @@
+.root {
+  padding: 40px 0 70px;
+  min-height: 65vh;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.top h1 {
+  font-family: Arial, sans-serif;
+  font-size: 30px;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+}
+.top small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 35px;
+}
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-right: 1px solid var(--line);
+  padding-right: 20px;
+  align-self: start;
+  position: sticky;
+  top: 20px;
+}
+.sidebar a {
+  padding: 9px 12px;
+  font-size: 13px;
+}
+.active {
+  background: var(--surface);
+  font-weight: 600;
+}
+.sidebar hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+.panel h2 {
+  font-family: Arial, sans-serif;
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  margin-bottom: 25px;
+}
+.panel h3 {
+  margin: 25px 0 15px;
+}
+.panel button,
+.panel .button,
+.top button,
+.login button {
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 13px;
+  text-align: center;
+}
+.panel button:hover,
+.top button:hover {
+  background: var(--surface);
+}
+.panel button:disabled,
+.login button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.primary {
+  background: var(--button) !important;
+  color: var(--button-text) !important;
+  border-color: var(--button) !important;
+}
+.danger {
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+.error {
+  padding: 14px 18px;
+  border: 1px solid #b34835;
+  color: var(--fg);
+  background: var(--surface);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.success {
+  padding: 14px 18px;
+  border: 1px solid var(--accent);
+  font-size: 14px;
+}
+.notice {
+  padding: 20px;
+  background: var(--surface);
+  font-size: 14px;
+  margin: 20px 0;
+}
+.label,
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+.field input,
+.field textarea,
+.field select,
+.inline input,
+.inline select,
+.richEditor input,
+.login input {
+  width: 100%;
+  min-width: 0;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  padding: 11px;
+  min-height: 43px;
+}
+.field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+.field small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+}
+.inline label {
+  flex: 1;
+  min-width: 150px;
+  font-size: 12px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 22px 0;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  z-index: 10;
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border: 1px solid var(--line);
+  padding: 18px;
+}
+.row h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.row p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 7px;
+}
+.login {
+  max-width: 440px;
+  margin: 70px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.login h1 {
+  font-size: 44px;
+}
+.login p {
+  font-size: 14px;
+}
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.mediaCard {
+  border: 1px solid var(--line);
+  padding: 15px;
+  overflow: hidden;
+}
+.mediaCard img {
+  height: 180px;
+  width: 100%;
+  object-fit: cover;
+  background: var(--surface);
+}
+.mediaCard h3 {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  margin-top: 12px;
+}
+.mediaCard p {
+  font-size: 12px;
+  color: var(--muted);
+}
+.mediaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.mediaActions button {
+  padding: 7px 10px;
+  min-height: 36px;
+  font-size: 11px;
+}
+.selectedMedia {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.selectedMedia img {
+  max-height: 200px;
+  width: 100%;
+  object-fit: contain;
+}
+.picked {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+}
+.picked img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+}
+.picked span {
+  flex: 1;
+  font-size: 12px;
+}
+.picked button {
+  font-size: 12px;
+  padding: 8px;
+}
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+.checkList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  border: 1px solid var(--line);
+  padding: 15px;
+}
+.richEditor {
+  border: 1px solid var(--line);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.toolbar button {
+  min-height: 34px;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+.toolbar button[aria-pressed="true"] {
+  background: var(--surface);
+}
+.richInput {
+  min-height: 180px;
+  outline: none;
+  padding: 15px;
+  border: 1px solid var(--line);
+  line-height: 1.7;
+}
+.richInput p {
+  margin-bottom: 12px;
+}
+.richInput h2 {
+  font-size: 30px;
+}
+.richInput h3 {
+  font-size: 23px;
+}
+.richInput a {
+  text-decoration: underline;
+}
+.version {
+  padding: 18px;
+  border: 1px solid var(--line);
+  margin-bottom: 10px;
+}
+.version p {
+  font-size: 13px;
+  margin: 8px 0;
+}
+.hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+.dialog {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid var(--accent);
+  background: var(--surface);
+}
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.dashboard a {
+  padding: 25px;
+  border: 1px solid var(--line);
+  font-size: 17px;
+}
+.dashboard span {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+@media (max-width: 1000px) {
+  .layout {
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 20px;
+  }
+  .gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fields {
+    grid-template-columns: 1fr;
+  }
+  .picked {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 700px) {
+  .root {
+    padding-top: 25px;
+  }
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 0 0 15px;
+    gap: 4px;
+  }
+  .sidebar a {
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+  .sidebar hr {
+    display: none;
+  }
+  .top {
+    align-items: start;
+  }
+  .top h1 {
+    font-size: 25px;
+  }
+  .row {
+    align-items: start;
+    flex-direction: column;
+  }
+  .gallery {
+    grid-template-columns: 1fr;
+  }
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+  .actions {
+    gap: 8px;
+  }
+  .actions button {
+    flex: 1;
+  }
+  .login {
+    margin: 40px auto;
+  }
+  .inline {
+    align-items: stretch;
+  }
+  .inline label {
+    min-width: 100%;
+  }
+  .version button {
+    width: 100%;
+  }
+}

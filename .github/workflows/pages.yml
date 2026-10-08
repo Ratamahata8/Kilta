@@ -1,0 +1,83 @@
+name: Deploy KILTA to GitHub Pages
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Demo without Supabase, or configured Supabase site"
+        type: choice
+        options: [demo, supabase]
+        default: demo
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # PRs always build an isolated demo; push defaults to demo until explicitly configured.
+      DEPLOY_MODE: ${{ github.event_name == 'pull_request' && 'demo' || inputs.mode || vars.KILTA_DEPLOY_MODE || 'demo' }}
+      SUPABASE_URL_FROM_SETTINGS: ${{ github.event_name != 'pull_request' && (vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL) || '' }}
+      SUPABASE_PUBLIC_KEY_FROM_SETTINGS: ${{ github.event_name != 'pull_request' && (vars.VITE_SUPABASE_PUBLISHABLE_KEY || secrets.VITE_SUPABASE_PUBLISHABLE_KEY) || '' }}
+      VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || format('/{0}/', github.event.repository.name) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - name: Select build mode
+        run: |
+          node --input-type=module <<'JS'
+          import { appendFileSync } from 'node:fs';
+          const mode = process.env.DEPLOY_MODE;
+          if (!['demo', 'supabase'].includes(mode)) throw Error('Unknown deployment mode');
+          const demo = mode === 'demo';
+          const url = demo ? '' : process.env.SUPABASE_URL_FROM_SETTINGS || '';
+          const key = demo ? '' : process.env.SUPABASE_PUBLIC_KEY_FROM_SETTINGS || '';
+          if (!demo) {
+            if (!url || !key) throw Error('Set public Supabase build variables before using supabase mode');
+            if (new URL(url).protocol !== 'https:') throw Error('Supabase URL must use HTTPS');
+            const publicKey = key.startsWith('sb_publishable_') || (() => {
+              try { return JSON.parse(Buffer.from(key.split('.')[1], 'base64url').toString()).role === 'anon'; }
+              catch { return false; }
+            })();
+            if (!publicKey) throw Error('Only a public publishable or legacy anon key is allowed');
+          }
+          const values = {VITE_DEMO_MODE: String(demo), VITE_SUPABASE_URL: url, VITE_SUPABASE_PUBLISHABLE_KEY: key};
+          if (Object.values(values).some(value => /[\r\n]/.test(value))) throw Error('Multiline configuration is not allowed');
+          appendFileSync(process.env.GITHUB_ENV, Object.entries(values).map(([name, value]) => `${name}=${value}\n`).join(''));
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, demo
+            ? '### Read-only KILTA demo\nNo Supabase connection. Login, uploads, saves and inquiry submission are disabled. Demo images are licensed 3D renders.\n'
+            : '### Supabase site\nPublic project configuration is required; verify Auth, RLS and Storage separately.\n');
+          JS
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: dist
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
