@@ -1,4 +1,36 @@
-import { defineConfig, globalIgnores } from 'eslint/config'
-import next from 'eslint-config-next/core-web-vitals'
-import ts from 'eslint-config-next/typescript'
-export default defineConfig([...next, ...ts, { rules: { '@next/next/no-img-element': 'off' } }, globalIgnores(['.next/**', 'src/payload-types.ts', 'src/migrations/**', 'src/app/(payload)/admin/importMap.js', 'test-results/**', 'playwright-report/**'])])
+import js from "@eslint/js";
+import ts from "typescript-eslint";
+import hooks from "eslint-plugin-react-hooks";
+export default ts.config(
+  {
+    ignores: [
+      ".test-build/**",
+      "dist/**",
+      "node_modules/**",
+      "playwright-report/**",
+      "test-results/**",
+    ],
+  },
+  js.configs.recommended,
+  ...ts.configs.recommended,
+  {
+    files: ["**/*.{ts,tsx}"],
+    plugins: { "react-hooks": hooks },
+    rules: {
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+    },
+  },
+  {
+    files: ["**/*.mjs"],
+    languageOptions: {
+      globals: {
+        process: "readonly",
+        console: "readonly",
+        Buffer: "readonly",
+        URL: "readonly",
+        fetch: "readonly",
+      },
+    },
+  },
+);
