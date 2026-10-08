@@ -10,7 +10,10 @@ import {
   price,
   availability,
   Arrow,
+  CategoryCard,
 } from "../components/Content";
+import { ProductGallery } from "../components/ProductGallery";
+import { Reveal } from "../components/Reveal";
 import { headings } from "../components/RichText";
 import { safeURL } from "../lib/validation";
 import type { Snapshot } from "../lib/types";
@@ -75,8 +78,8 @@ export function HomePage() {
                 </div>
                 {products.length ? (
                   <div className={styles.grid}>
-                    {products.map((item) => (
-                      <ItemCard key={item.id} item={item} />
+                    {products.map((item, index) => (
+                      <Reveal key={item.id} delay={index * 50}><ItemCard item={item} /></Reveal>
                     ))}
                   </div>
                 ) : (
@@ -94,15 +97,8 @@ export function HomePage() {
                   </div>
                 </div>
                 <div className={styles.categories}>
-                  {categories.map((c) => (
-                    <Link
-                      className={styles.category}
-                      key={c.id}
-                      to={`/catalog?category=${c.slug}`}
-                    >
-                      {c.data.title}
-                      <Arrow />
-                    </Link>
+                  {categories.map((c, index) => (
+                    <Reveal key={c.id} delay={index * 50}><CategoryCard item={c} /></Reveal>
                   ))}
                 </div>
               </section>
@@ -288,8 +284,8 @@ export function CatalogPage() {
       </p>
       {visible.length ? (
         <div className={styles.grid}>
-          {visible.map((item) => (
-            <ItemCard key={item.id} item={item} />
+          {visible.map((item, index) => (
+            <Reveal key={item.id} delay={index * 50}><ItemCard item={item} /></Reveal>
           ))}
         </div>
       ) : (
@@ -319,7 +315,7 @@ export function CatalogPage() {
 }
 export function ProductPage({ entry }: { entry?: Snapshot }) {
   const { slug } = useParams();
-  const { entries, media } = useCatalog();
+  const { entries } = useCatalog();
   const item =
     entry || entries.find((e) => e.kind === "product" && e.slug === slug);
   if (!item) return <NotFoundPage />;
@@ -331,27 +327,16 @@ export function ProductPage({ entry }: { entry?: Snapshot }) {
         ),
       ),
     ];
+  const numericDimensions = (["height", "width", "depth"] as const)
+    .map((key, i) => d.dimensions?.[key] != null ? `${["В", "Ш", "Г"][i]} ${d.dimensions[key]}` : null)
+    .filter(Boolean).join(" × ");
   return (
     <>
       <div className={styles.breadcrumb}>
         <Link to="/catalog">Коллекция</Link> / {d.title}
       </div>
       <article className={styles.product}>
-        <div className={styles.productGallery}>
-          {photos.length ? (
-            photos.map((id, i) => {
-              const photo = media.find((m) => m.id === id);
-              return (
-                <figure key={id}>
-                  <Picture id={id} hero={i === 0} />
-                  {photo?.caption && <figcaption>{photo.caption}</figcaption>}
-                </figure>
-              );
-            })
-          ) : (
-            <Picture />
-          )}
-        </div>
+        <ProductGallery key={item.id} ids={photos} title={d.title} />
         <div className={styles.productDetails}>
           <span className={styles.eyebrow}>
             {entries
@@ -370,7 +355,7 @@ export function ProductPage({ entry }: { entry?: Snapshot }) {
           )}
           <p className={styles.productPrice}>{price(item)}</p>
           <p style={{ color: "var(--muted)", fontSize: 13 }}>
-            {availability[d.availability || "order"]}
+            {d.availabilityConfirmed === false ? "Наличие уточняется" : availability[d.availability || "order"]}
           </p>
           <div style={{ marginTop: 30 }}>
             <Text value={d.description} />
@@ -380,16 +365,10 @@ export function ProductPage({ entry }: { entry?: Snapshot }) {
             <dd>{d.materials?.join(", ") || "Уточняются"}</dd>
             <dt>Размеры</dt>
             <dd>
-              {(["height", "width", "depth"] as const)
-                .map((key, i) =>
-                  d.dimensions?.[key] != null
-                    ? `${["В", "Ш", "Г"][i]} ${d.dimensions[key]}`
-                    : null,
-                )
-                .filter(Boolean)
-                .join(" × ") || "Уточняются"}{" "}
-              {d.unit === "mm" ? "мм" : "см"}
+              {d.dimensionsText || (numericDimensions ? `${numericDimensions} ${d.unit === "mm" ? "мм" : "см"}` : "Уточняются")}
             </dd>
+            {d.yearText && <><dt>Год создания</dt><dd>{d.yearText}</dd></>}
+            {d.exhibitionsText && <><dt>Выставки</dt><dd>{d.exhibitionsText}</dd></>}
             {d.leadTime && (
               <>
                 <dt>Срок изготовления</dt>
@@ -446,6 +425,7 @@ export function WorkshopPage() {
 }
 export function ShowroomsPage() {
   const { entries } = useCatalog();
+  const contacts = useGlobal("contacts");
   const rooms = entries.filter((e) => e.kind === "showroom");
   return (
     <>
@@ -498,6 +478,12 @@ export function ShowroomsPage() {
           встречи можно через контакты.
         </Empty>
       )}
+      {contacts.platforms?.length ? <section className={styles.section}>
+        <h2>Онлайн-платформы</h2>
+        {contacts.platforms.filter(p => safeURL(p.url)).map(p => <div key={p.url} className={styles.showroom}>
+          <h3>{p.label}</h3><p>{p.description}</p><a className={styles.textLink} href={p.url} target="_blank" rel="noopener noreferrer">Открыть платформу <Arrow /></a>
+        </div>)}
+      </section> : null}
     </>
   );
 }
@@ -524,7 +510,9 @@ export function ContactsPage() {
               {d.email}
             </a>
           )}
-          {d.phone && (
+          {d.contactPeople?.length ? d.contactPeople.map(person => <div key={person.phone}>
+            <h3>{person.name}</h3><a href={`tel:${person.phone.replace(/[^+0-9]/g, "")}`}>{person.phone}</a>
+          </div>) : d.phone && (
             <a href={`tel:${d.phone.replace(/[^+0-9]/g, "")}`}>{d.phone}</a>
           )}
           {d.address && <p style={{ whiteSpace: "pre-line" }}>{d.address}</p>}
@@ -546,6 +534,7 @@ export function ContactsPage() {
           )}
         </div>
         <div>
+          {d.image && <Picture id={d.image} />}
           <h2 style={{ fontSize: 34, marginBottom: 25 }}>
             {product
               ? `О предмете «${product.data.title}»`
@@ -574,8 +563,9 @@ export function DocumentPage({ entry }: { entry?: Snapshot }) {
     <article className={styles.document}>
       <span className={styles.eyebrow}>KILTA / Документы</span>
       <h1>{d.title}</h1>
+      {d.requiresReview && <p className={styles.notice}>Архивный текст из исходного сайта. Актуальность и юридические сведения требуют подтверждения владельца; это не утверждённый документ для нового сайта.</p>}
       <p className={styles.documentMeta}>
-        Редакция от{" "}
+        {d.requiresReview ? "Дата извлечения архива: " : "Редакция от "}
         {d.editionDate
           ? new Date(d.editionDate).toLocaleDateString("ru-RU")
           : "—"}

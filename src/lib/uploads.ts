@@ -57,9 +57,10 @@ export async function uploadFile(
   file: File,
   kind: "image" | "pdf",
   alt: string,
+  imported?: { id: string; source: string },
 ): Promise<Media> {
   const mime = await verifyFile(file, kind);
-  const id = crypto.randomUUID(),
+  const id = imported?.id || crypto.randomUUID(),
     ext =
       kind === "pdf"
         ? "pdf"
@@ -104,7 +105,7 @@ export async function uploadFile(
     kind,
     alt: alt.trim() || file.name.replace(/\.[^.]+$/, ""),
     caption: "",
-    source: "",
+    source: imported?.source || "",
     focal_x: 50,
     focal_y: 50,
     original_path: `${id}/original.${ext}`,

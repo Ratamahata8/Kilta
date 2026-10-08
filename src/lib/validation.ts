@@ -36,6 +36,15 @@ export function validateRich(node: RichNode, depth = 0): boolean {
   return !node.content || node.content.every((n) => validateRich(n, depth + 1));
 }
 export function validateContent(kind: Kind, slug: string, data: ContentData) {
+  for (const key of ["dimensionsText", "yearText", "exhibitionsText", "priceNote"] as const)
+    if (data[key] != null && (typeof data[key] !== "string" || data[key]!.length > 5000))
+      throw new Error("Импортированное текстовое поле должно быть строкой до 5000 символов.");
+  for (const key of ["availabilityConfirmed", "requiresReview"] as const)
+    if (data[key] != null && typeof data[key] !== "boolean") throw new Error("Проверьте отметку подтверждения.");
+  if (data.contactPeople && (!Array.isArray(data.contactPeople) || data.contactPeople.length > 10 || data.contactPeople.some(p => typeof p.name !== "string" || !/^[+0-9 ()-]+$/.test(p.phone))))
+    throw new Error("Проверьте имена и телефоны контактных лиц.");
+  if (data.platforms && (!Array.isArray(data.platforms) || data.platforms.length > 30 || data.platforms.some(p => !safeURL(p.url) || !/^https?:\/\//.test(p.url) || typeof p.label !== "string" || typeof p.description !== "string")))
+    throw new Error("Проверьте название и http(s)-ссылку площадки.");
   if (!data.title.trim() || data.title.length > 160)
     throw new Error("Укажите название, не длиннее 160 символов.");
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))

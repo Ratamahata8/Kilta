@@ -1,5 +1,5 @@
 import pg from "pg";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 const url = process.env.TEST_DATABASE_URL;
@@ -50,9 +50,8 @@ try {
     alter table storage.objects enable row level security;
     grant select on storage.objects to anon;
     grant select,insert,update,delete on storage.objects to authenticated;`);
-  await client.query(
-    await readFile("supabase/migrations/20261008000100_kilta.sql", "utf8"),
-  );
+  for (const file of (await readdir("supabase/migrations")).filter(f => f.endsWith(".sql")).sort())
+    await client.query(await readFile(`supabase/migrations/${file}`, "utf8"));
   for (const id of Object.values(ids))
     await client.query("insert into auth.users values($1)", [id]);
   await client.query(
@@ -351,8 +350,15 @@ try {
           .rowCount,
         1,
       );
+      const dimensions = await anon(() => client.query("select width,height from public.published_media where id=$1", [image.id]));
+      assert.equal(dimensions.rows[0].width, image.width);
+      assert.equal(dimensions.rows[0].height, image.height);
     },
   );
+  await run("import metadata is validated on the server without changing private access", async () => {
+    for (const extra of [{platforms: [{label: "Bad", description: "Bad", url: "javascript:alert(1)"}]}, {dimensionsText: {height: 1900}}, {contactPeople: [{name: "Bad", phone: "tel:script"}]}])
+      await assert.rejects(owner(() => save(null, "contacts", `invalid-${Math.random().toString(36).slice(2)}`, {title: "Invalid import", ...extra}, 0)));
+  });
   await run("draft edits never replace previous public snapshot", async () => {
     product = (
       await client.query("select * from public.content where id=$1", [

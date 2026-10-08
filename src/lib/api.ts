@@ -45,6 +45,10 @@ export async function loadPublished() {
         m.kind === "pdf" ? "kilta-public-documents" : "kilta-public",
       ),
       heroUrl: m.hero_path ? publicURL(m.hero_path) : undefined,
+      cardWidth: m.width ? Math.min(m.width, 720) : undefined,
+      cardHeight: m.width && m.height ? Math.round(m.height * Math.min(1, 720 / m.width)) : undefined,
+      heroWidth: m.width ? Math.min(m.width, 1920) : undefined,
+      heroHeight: m.width && m.height ? Math.round(m.height * Math.min(1, 1920 / m.width)) : undefined,
     })),
   };
 }
@@ -54,6 +58,10 @@ export async function listDrafts() {
     { field: "deleted", value: false },
     "updated_at",
   )) as Entry[];
+}
+// Import must also see archived rows, so repeated runs never resurrect them.
+export async function listImportEntries() {
+  return await allRows("content") as Entry[];
 }
 export async function listMedia() {
   return (await allRows("media", undefined, "created_at")) as Media[];
